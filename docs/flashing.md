@@ -57,6 +57,8 @@ python .\scripts\run_spd_plan.py --plan C:\F50Tools\runs\B09-first --tool C:\F50
 
 成功后生成 `system-verification.json`，不自动清 userdata 或重启。中途失败可能留下不完整系统，不能直接重启或盲目重复整个计划。重复运行会被拒绝，应先根据本地日志检查状态；新计划也不等于自动安全恢复。
 
+不知道窗口里的结果该怎么看，可以对照 [系统写入的判断方法](commands.md#怎么判断写入有没有完成)：单项写入完成、读回检查通过和整套系统能正常启动，是不同阶段，要分别确认。
+
 ## 五、只清除 userdata
 
 不要执行上游 `e userdata`，该固定版本的封装有额外行为，详见 [命令说明](commands.md)。本脚本直接发送仅命名 userdata 的原生擦除请求：
