@@ -11,6 +11,7 @@
 - [B15 → B09：保留基带/NV 的刷写步骤](docs/flashing.md)
 - [命令说明与禁用命令](docs/commands.md)
 - [每条脚本指令、参数与写入目标的作用](docs/script-reference.md)
+- [供 AI 阅读：全程协作与操作手册](docs/ai-runbook.md)
 - [实测案例、问题和处理结果](docs/case-study.md)
 - [校验与测试范围](docs/validation.md)
 
