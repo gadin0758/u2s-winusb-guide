@@ -6,6 +6,8 @@
 
 ## 一、电脑驱动相关指令
 
+**脚本源码：** [Check-Drivers.ps1](../scripts/Check-Drivers.ps1)、[Export-U2SDriver.ps1](../scripts/Export-U2SDriver.ps1)、[Prepare-U2SDriver.ps1](../scripts/Prepare-U2SDriver.ps1)。
+
 | 指令 | 每个参数的作用 | 实际改变 |
 | --- | --- | --- |
 | `Check-Drivers.ps1` | 无参数；列出电脑已连接设备的驱动信息，筛选下载设备及相关接口 | 只读电脑设备信息 |
@@ -26,6 +28,8 @@
 
 ## 二、建立下载会话
 
+**脚本源码：** [Start-Fdl2.ps1](../scripts/Start-Fdl2.ps1)、[f50.py](../scripts/f50.py)；Python 配套文件是 [f50lib.py](../scripts/f50lib.py)。
+
 | 指令 | 参数含义 | 对设备的作用 |
 | --- | --- | --- |
 | `Start-Fdl2.ps1 -ToolDirectory 目录 [-Python python路径]` | ToolDirectory 内必须同时有 LibUSB 版 spd_dump.exe 和配套 DLL；Python 可指定解释器 | 等关机插线，发 mode 2 请求，交接给上游加载 RAM 中的 FDL；不刷分区 |
@@ -35,6 +39,8 @@
 `Start-Fdl2.ps1` 已调用 connect，不要先手动 connect 再把完整 Start-Fdl2 又跑一遍。模式请求会改变设备运行状态，但不是持久化镜像写入。
 
 ## 三、备份与离线计划
+
+**脚本源码：** [f50.py](../scripts/f50.py)、[run_spd_plan.py](../scripts/run_spd_plan.py)；配套文件是 [f50lib.py](../scripts/f50lib.py)。
 
 | Python 子命令 | 必需参数 | 作用与输出 |
 | --- | --- | --- |
@@ -50,6 +56,8 @@
 
 ## 四、会改变系统或删除数据的指令
 
+**脚本源码：** [f50.py](../scripts/f50.py)、[run_spd_plan.py](../scripts/run_spd_plan.py)；配套文件是 [f50lib.py](../scripts/f50lib.py)。
+
 | 指令 | 作用 | 前置条件 |
 | --- | --- | --- |
 | `run_spd_plan.py --plan 目录 --tool EXE --execute` | 重连 FDL2，核对备份/当前保护内容，写入 14 项系统目标，擦 metadata/cache，设 A 槽并读回校验 | 完整备份、完整刷前快照、源哈希、设备保护内容都通过；已尝试的计划不能直接重复 |
@@ -59,6 +67,8 @@
 `--execute` 才会真正刷写；`--confirm` 必须与表内字符串完全一致。任何报错停止后，不能把确认词当作绕过检查的方式。失败时脚本不会自动 reset。
 
 ## 五、计划中每条上游指令的作用
+
+**脚本源码：** [f50.py](../scripts/f50.py)、[run_spd_plan.py](../scripts/run_spd_plan.py)；配套文件是 [f50lib.py](../scripts/f50lib.py)。
 
 以下说明针对 `reviewed-commands.txt` 中生成的命令，路径和字节数由本地计划填写：
 

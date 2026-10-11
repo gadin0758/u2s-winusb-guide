@@ -6,6 +6,8 @@
 
 管理员 PowerShell：
 
+**本步使用的脚本：** [Check-Drivers.ps1](../scripts/Check-Drivers.ps1) — 查看当前设备和驱动。
+
 ```powershell
 .\scripts\Check-Drivers.ps1
 pnputil.exe /enum-drivers
@@ -14,6 +16,8 @@ pnputil.exe /enum-drivers
 在设备管理器目标设备的“详细信息”中核对硬件 ID `USB\VID_1782&PID_4D00`、驱动 INF 名称、服务名。原 U2S 服务应是 `sprdvcom`，不是 WinUSB。
 
 找到对应的实际 `oem数字.inf`，例如你电脑上若是 `oem123.inf`：
+
+**本步使用的脚本：** [Export-U2SDriver.ps1](../scripts/Export-U2SDriver.ps1) — 保存原驱动包。
 
 ```powershell
 .\scripts\Export-U2SDriver.ps1 -PublishedName oem123.inf -OutDirectory C:\F50Tools\original-driver
@@ -24,6 +28,8 @@ pnputil.exe /enum-drivers
 ## 二、安装原驱动包
 
 可以运行原驱动包中的 `Win10\DPInst64.exe`，或管理员 PowerShell 安装正确架构的原 `sprdvcom.inf`：
+
+**本步使用的脚本：** [Prepare-U2SDriver.ps1](../scripts/Prepare-U2SDriver.ps1) — 把原驱动安装回电脑。
 
 ```powershell
 .\scripts\Prepare-U2SDriver.ps1 -DriverInf C:\F50Tools\original-driver\实际子目录\sprdvcom.inf
@@ -52,6 +58,8 @@ pnputil.exe /enum-drivers
 | 再次关机接线 | 仍绑定原 U2S |
 
 需要命令查询时，可把设备管理器中复制的**完整设备实例路径**填入：
+
+**本步使用的工具：** Windows 自带的 `pnputil.exe`，这里没有调用本仓库脚本。
 
 ```powershell
 pnputil.exe /enum-devices /instanceid "此处替换为本机完整设备实例路径" /drivers

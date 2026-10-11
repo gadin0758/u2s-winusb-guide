@@ -11,6 +11,8 @@
 
 ## 发布版离线验证
 
+**本步检查的源码：** [test_workflow.py](../tests/test_workflow.py) 是测试文件；[f50.py](../scripts/f50.py)、[f50lib.py](../scripts/f50lib.py)、[run_spd_plan.py](../scripts/run_spd_plan.py) 是被测试的脚本。下面调用 Python 自带的测试和语法检查工具，不操作设备。
+
 ```powershell
 python -m unittest discover -s tests -v
 python -m compileall -q scripts tests

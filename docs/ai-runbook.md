@@ -87,6 +87,8 @@ LibUSB 工具路径：<spd_dump_LibUSB_Release 所在目录>
 
 确认只有一个目标下载设备，没有另一个刷机/串口进程占用。查询当前驱动；换 WinUSB 前导出本机 sprdvcom 驱动。保留完整 INF/CAT/SYS，不公开设备实例路径。
 
+**本步使用的脚本：** [Check-Drivers.ps1](../scripts/Check-Drivers.ps1) — 查看当前设备和驱动；[Export-U2SDriver.ps1](../scripts/Export-U2SDriver.ps1) — 保存原驱动包。
+
 ```powershell
 .\scripts\Check-Drivers.ps1
 .\scripts\Export-U2SDriver.ps1 -PublishedName <本机原驱动OEM名> -OutDirectory <本地原驱动保存目录>
@@ -95,6 +97,8 @@ LibUSB 工具路径：<spd_dump_LibUSB_Release 所在目录>
 依据 [主教程](../README.md) 选择 Zadig 中的正确通用 VID/PID，并绑定 WinUSB。安装成功提示不能代替实际绑定检查。保留驱动截图时避免摄入其他设备的个人标识，且不上传公共仓库。
 
 ### B. 启动等待，再通知用户插线
+
+**本步使用的脚本：** [Start-Fdl2.ps1](../scripts/Start-Fdl2.ps1) — 等待设备、建立下载连接并加载 FDL。 内部会调用 [f50.py](../scripts/f50.py)，并需要配套 [f50lib.py](../scripts/f50lib.py)，请一起保留在 scripts 目录。
 
 ```powershell
 .\scripts\Start-Fdl2.ps1 -ToolDirectory <LibUSB工具目录> -Python <Python解释器路径>
@@ -106,6 +110,8 @@ AI 必须先从实际输出确认 READY，再让用户“拔线 → 关机 → �
 
 ### C. 完整备份并验证
 
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `backup` 读取并保存完整备份、`verify-backup` 检查备份是否完整、内容是否一致。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
+
 ```powershell
 python .\scripts\f50.py backup --dll <LibUSB工具目录>\libusb-1.0.dll --out <新备份目录>
 python .\scripts\f50.py verify-backup --backup <备份目录>
@@ -116,6 +122,8 @@ python .\scripts\f50.py verify-backup --backup <备份目录>
 失败时保留现有文件，不改清单、不删保护检查，不把 `.partial` 计为备份成功。重读需要新目录，且先确认当前会话状态。不能为了赶进度跳过 userdata 或 NV。
 
 ### D. 生成计划、完成具体方案后确认写入范围
+
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `plan` 离线生成刷写计划；[run_spd_plan.py](../scripts/run_spd_plan.py) — 只预览计划，本步不刷写。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
 
 ```powershell
 python .\scripts\f50.py plan --backup <备份目录> --package <固件包根目录> --out <新计划目录>
@@ -137,6 +145,8 @@ metadata/cache/userdata、设置 A 槽、执行读回及保护数据校验，并
 
 ### E. 刷前快照、执行、独立清数据与保护比较
 
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `snapshot` 保存这次刷写前需要保留的内容；[run_spd_plan.py](../scripts/run_spd_plan.py) — 执行已确认的刷写计划，并读回检查。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
+
 ```powershell
 python .\scripts\f50.py snapshot --dll <LibUSB工具目录>\libusb-1.0.dll --plan <计划目录>
 python .\scripts\run_spd_plan.py --plan <计划目录> --tool <LibUSB工具目录>\spd_dump.exe --execute
@@ -145,6 +155,8 @@ python .\scripts\run_spd_plan.py --plan <计划目录> --tool <LibUSB工具目�
 记录快照完整性和真实写入结果。执行器会消耗一次上游 FDL2 重连，因此不能先另外跑 `-Reconnect` 再跑执行器。保持同一次设备会话；backup、snapshot 等原生读取不执行上游重连。
 
 只有 `system-verification.json` 中完整 14 项读回通过，才能继续已授权的数据清除：
+
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `erase-userdata` 只清除用户数据、`audit` 检查需要保留的内容有没有变化。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
 
 ```powershell
 python .\scripts\f50.py erase-userdata --dll <LibUSB工具目录>\libusb-1.0.dll --plan <计划目录> --confirm ERASE_USERDATA
@@ -155,11 +167,15 @@ python .\scripts\f50.py audit --dll <LibUSB工具目录>\libusb-1.0.dll --plan <
 
 ### F. 全部通过后重启，再验证运行结果
 
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `reset` 检查通过后发送重启命令。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
+
 ```powershell
 python .\scripts\f50.py reset --dll <LibUSB工具目录>\libusb-1.0.dll --plan <计划目录> --confirm REBOOT
 ```
 
 AI 应区分三个结果：下载程序接受 reset、设备真正启动、运行中的功能正常。分别核对系统版本、USB 网络和移动数据；Root/ADB 如属于另一个目标，应独立验证。两个灯亮、ACK 或镜像哈希匹配都不能代替实际运行结果。无法观察时明确请用户反馈，不编造状态。
+
+**恢复驱动用到的脚本：** [Check-Drivers.ps1](../scripts/Check-Drivers.ps1) 查看驱动，[Export-U2SDriver.ps1](../scripts/Export-U2SDriver.ps1) 保存原驱动，[Prepare-U2SDriver.ps1](../scripts/Prepare-U2SDriver.ps1) 安装原驱动包；实际改绑仍按恢复教程检查。
 
 需要改回 U2S 时，等当前操作结束，再按 [恢复教程](restore-u2s.md) 安装并为同一个目标绑定原 sprdvcom；恢复驱动不等于修复原串口通信问题。
 

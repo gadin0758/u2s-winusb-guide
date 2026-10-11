@@ -4,6 +4,8 @@
 
 ## 连接与读取
 
+**对应脚本：** [Start-Fdl2.ps1](../scripts/Start-Fdl2.ps1) 负责建立连接，[f50.py](../scripts/f50.py) 负责连接请求和备份读取，[f50lib.py](../scripts/f50lib.py) 提供配套 USB 读写功能。下表中的 `spd_dump` 指令由外部工具执行。
+
 | 操作 | 含义与限制 |
 | --- | --- |
 | mode 2 握手 | 先发控制请求 `0x21/34/0x601`，再发 `7e 00 00 00 00 08 00 fe 82 7e`，等新枚举后交接；本案例无需 ADB 或短接 |
@@ -18,6 +20,8 @@
 握手只能用于支持此下载模式的设备，不代表绕过固件认证。FDL 的内存发送/执行不是镜像持久化写入。若上游自动加载失败，本教程没有提供其他型号的 FDL 或任意地址。
 
 ## 系统写入
+
+**对应脚本：** [f50.py](../scripts/f50.py) 的 `plan` 生成命令清单，[run_spd_plan.py](../scripts/run_spd_plan.py) 执行计划并检查结果。下面的 `w`、`read_part` 是外部 `spd_dump.exe` 的交互命令，不是 Python 脚本命令。
 
 ```text
 w boot_a "C:\F50Tools\runs\B09-first\images\boot_a.bin"
@@ -49,6 +53,8 @@ read_part boot_a 0 实际分区字节数 "C:\F50Tools\runs\B09-first\readback\bo
 ### 怎么判断读回检查通过？
 
 自动脚本已经包含这一步。手工执行完整计划后，在 `FDL2 >` 空闲提示符关闭电脑上的上游程序，保持数据线连接，再运行下面的检查命令；路径换成你本次的计划目录：
+
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `verify-system` 检查系统读回文件。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
 
 ```powershell
 python .\scripts\f50.py verify-system --plan C:\F50Tools\runs\B09-first

@@ -16,6 +16,8 @@
 
 下列路径都是示例，在仓库根目录执行。`plan` 不接触设备：
 
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `plan` 离线生成刷写计划；[run_spd_plan.py](../scripts/run_spd_plan.py) — 只预览计划，本步不刷写。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
+
 ```powershell
 python .\scripts\f50.py plan --backup C:\F50Tools\backups\B15-original --package C:\F50Tools\B09-package --out C:\F50Tools\runs\B09-first
 python .\scripts\run_spd_plan.py --plan C:\F50Tools\runs\B09-first --tool C:\F50Tools\spd_dump_LibUSB_Release\spd_dump.exe
@@ -37,6 +39,8 @@ vbmeta_product_a  vbmeta_odm_a  super
 
 保持已加载的 FDL2；若已重启，先重新按主教程进入 FDL2，再在空闲提示符 Ctrl+C 关闭上游进程。
 
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `snapshot` 保存这次刷写前需要保留的内容。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
+
 ```powershell
 python .\scripts\f50.py snapshot --dll C:\F50Tools\spd_dump_LibUSB_Release\libusb-1.0.dll --plan C:\F50Tools\runs\B09-first
 ```
@@ -46,6 +50,8 @@ python .\scripts\f50.py snapshot --dll C:\F50Tools\spd_dump_LibUSB_Release\libus
 ## 四、写入系统，再读回来检查
 
 保持数据线连接，不拔线、不重启，让设备继续留在下载模式。下面的脚本会自己接回刚才的 FDL2 连接，**不用先运行 `Start-Fdl2.ps1 -Reconnect`**。这个版本的上游工具只支持一次 FDL2 重连；如果提前手动重连，再运行下面的脚本可能连不上。
+
+**本步使用的脚本：** [run_spd_plan.py](../scripts/run_spd_plan.py) — 执行已确认的刷写计划，并读回检查。 配套文件：[f50lib.py](../scripts/f50lib.py)、[f50.py](../scripts/f50.py)，请保留在同一 scripts 目录。
 
 ```powershell
 python .\scripts\run_spd_plan.py --plan C:\F50Tools\runs\B09-first --tool C:\F50Tools\spd_dump_LibUSB_Release\spd_dump.exe --execute
@@ -67,6 +73,8 @@ python .\scripts\run_spd_plan.py --plan C:\F50Tools\runs\B09-first --tool C:\F50
 
 不要执行上游 `e userdata`，该固定版本的封装有额外行为，详见 [命令说明](commands.md)。本脚本直接发送仅命名 userdata 的原生擦除请求：
 
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `erase-userdata` 只清除用户数据。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
+
 ```powershell
 python .\scripts\f50.py erase-userdata --dll C:\F50Tools\spd_dump_LibUSB_Release\libusb-1.0.dll --plan C:\F50Tools\runs\B09-first --confirm ERASE_USERDATA
 ```
@@ -76,6 +84,8 @@ python .\scripts\f50.py erase-userdata --dll C:\F50Tools\spd_dump_LibUSB_Release
 若脚本检测到恢复模式命令，停下查明来源。本仓库不自动覆盖 misc 或恢复 persist，避免把其他设备的异常状态当成本案例。
 
 ## 六、比较保护分区，再重启
+
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `audit` 检查需要保留的内容有没有变化、`reset` 检查通过后发送重启命令。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
 
 ```powershell
 python .\scripts\f50.py audit --dll C:\F50Tools\spd_dump_LibUSB_Release\libusb-1.0.dll --plan C:\F50Tools\runs\B09-first
@@ -88,7 +98,11 @@ python .\scripts\f50.py reset --dll C:\F50Tools\spd_dump_LibUSB_Release\libusb-1
 
 ## 手工执行
 
+**本步使用的脚本和清单：** [f50.py](../scripts/f50.py) 的 `plan` 生成 `reviewed-commands.txt`；[Start-Fdl2.ps1](../scripts/Start-Fdl2.ps1) 接回连接，随后由外部 `spd_dump.exe` 执行清单里的命令。手工执行完毕后，用 [f50.py](../scripts/f50.py) 的 `verify-system` 检查读回结果。
+
 熟悉上游工具者可以在现有 FDL2 中只重连一次，在交互提示符逐行运行生成的 `reviewed-commands.txt`，每条核对结果。自动化和手工执行二选一，不能连续把两份都跑一遍。
+
+**本步使用的脚本：** [Start-Fdl2.ps1](../scripts/Start-Fdl2.ps1) — 接回已经加载的 FDL2 连接。
 
 ```powershell
 .\scripts\Start-Fdl2.ps1 -ToolDirectory C:\F50Tools\spd_dump_LibUSB_Release -Reconnect

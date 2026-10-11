@@ -56,7 +56,7 @@ USB 网络的 RNDIS、ADB、MTP、摄像头是不同设备/接口，不能一起
 
 建议把本仓库解压到 `C:\F50Tools\u2s-winusb-guide`，将外部工具放在另一个目录，例如 `C:\F50Tools\spd_dump_LibUSB_Release`。刷写暂存目录必须使用纯英文路径，磁盘支持大于 4 GB 的文件，并预留完整备份与读回校验的空间。
 
-**替换前保留原驱动**：管理员 PowerShell 运行 `scripts\Check-Drivers.ps1`，找到目标设备的实际 `oem数字.inf`，再按 [恢复教程](docs/restore-u2s.md) 导出。不同电脑的 OEM 编号不同，不能照抄他人的编号。
+**替换前保留原驱动**：管理员 PowerShell 运行 [Check-Drivers.ps1](scripts/Check-Drivers.ps1)（查看设备和驱动），找到目标设备的实际 `oem数字.inf`，再按 [恢复教程](docs/restore-u2s.md) 导出。不同电脑的 OEM 编号不同，不能照抄他人的编号。
 
 ## 3. 将目标下载设备切换为 WinUSB
 
@@ -73,6 +73,8 @@ USB 网络的 RNDIS、ADB、MTP、摄像头是不同设备/接口，不能一起
 
 在仓库根目录打开 PowerShell：
 
+**本步使用的脚本：** [Start-Fdl2.ps1](scripts/Start-Fdl2.ps1) — 等待设备、建立下载连接并加载 FDL。 内部会调用 [f50.py](scripts/f50.py)，并需要配套 [f50lib.py](scripts/f50lib.py)，请一起保留在 scripts 目录。
+
 ```powershell
 .\scripts\Start-Fdl2.ps1 -ToolDirectory C:\F50Tools\spd_dump_LibUSB_Release
 ```
@@ -86,6 +88,8 @@ FDL 加载到 RAM 与刷写存储分区不同。这一步只建立连接并加�
 ## 5. WinUSB 下先完成完整备份
 
 在 `FDL2 >` 空闲提示符处按 Ctrl+C，关闭电脑上的上游程序，**保持设备连接，不要断电或重启**。随后运行：
+
+**本步使用的脚本：** [f50.py](scripts/f50.py) — `backup` 读取并保存完整备份、`verify-backup` 检查备份是否完整、内容是否一致。 配套文件：[f50lib.py](scripts/f50lib.py)，请保留在同一 scripts 目录。
 
 ```powershell
 python .\scripts\f50.py backup --dll C:\F50Tools\spd_dump_LibUSB_Release\libusb-1.0.dll --out C:\F50Tools\backups\B15-original

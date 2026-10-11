@@ -24,12 +24,16 @@ U2S 串口无法写入时，原串口备份脚本也会失败。WinUSB 配合 Li
 2. 上游工具已显示 `FDL2 >`，在空闲提示符按 Ctrl+C 退出主机程序，不拔线、不重启。
 3. 使用一个**不存在的新输出目录**：
 
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `backup` 读取并保存完整备份。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
+
 ```powershell
 python .\scripts\f50.py backup --dll C:\F50Tools\spd_dump_LibUSB_Release\libusb-1.0.dll --out C:\F50Tools\backups\B15-original
 ```
 
 4. 等待全部读取结束。每隔约 30 秒显示进度，大文件读取可能持续较久；案例约需二十余分钟，具体取决于接口和磁盘。不要因短暂没有新输出而断电。
 5. 离线校验：
+
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `verify-backup` 检查备份是否完整、内容是否一致。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
 
 ```powershell
 python .\scripts\f50.py verify-backup --backup C:\F50Tools\backups\B15-original
@@ -57,6 +61,8 @@ python .\scripts\f50.py verify-backup --backup C:\F50Tools\backups\B15-original
 
 先保留旧目录和报错内容，让 AI 或懂这套流程的人检查数据线、驱动、磁盘空间和连接状态。确认只是备份阶段、没有刷写正在进行后，按主教程重新进入 `FDL2 >`，再在空闲提示符关闭上游程序。然后把 `--out` 换成一个**还不存在的新目录**，从头备份，例如：
 
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `backup` 读取并保存完整备份、`verify-backup` 检查备份是否完整、内容是否一致。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
+
 ```powershell
 python .\scripts\f50.py backup --dll C:\F50Tools\spd_dump_LibUSB_Release\libusb-1.0.dll --out C:\F50Tools\backups\B15-retry
 python .\scripts\f50.py verify-backup --backup C:\F50Tools\backups\B15-retry
@@ -71,6 +77,8 @@ python .\scripts\f50.py verify-backup --backup C:\F50Tools\backups\B15-retry
 把**整个备份文件夹**复制到另一块磁盘，里面的镜像、清单和校验文件都要留着。不要只留基带文件，恢复设备时还可能需要其他文件。
 
 复制后再检查一次，路径换成复制品的位置。例如复制到了 `D:\F50Backup\B15-original`：
+
+**本步使用的脚本：** [f50.py](../scripts/f50.py) — `verify-backup` 检查备份是否完整、内容是否一致。 配套文件：[f50lib.py](../scripts/f50lib.py)，请保留在同一 scripts 目录。
 
 ```powershell
 python .\scripts\f50.py verify-backup --backup D:\F50Backup\B15-original
