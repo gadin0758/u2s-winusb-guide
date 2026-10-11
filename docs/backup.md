@@ -78,4 +78,3 @@ python .\scripts\f50.py verify-backup --backup D:\F50Backup\B15-original
 
 复制品也显示 `BACKUP VERIFIED`，才算检查通过。
 
-**备份留在自己电脑或私人磁盘里，不要上传公开仓库。** 里面可能含设备身份、联网设置、密码和个人数据。给 AI 看报错时，也只提供去掉个人信息的必要文字，不上传整套备份。
